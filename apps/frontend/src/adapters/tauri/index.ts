@@ -5,7 +5,7 @@ import type { RunEnv } from "../types";
 import { RunEnvs } from "../types";
 
 // Platform constants from core
-export { isDesktop, isWeb, logger } from "./core";
+export { invoke, isDesktop, isWeb, logger } from "./core";
 
 /**
  * Runtime environment identifier - always "desktop" for Tauri builds
@@ -13,7 +13,6 @@ export { isDesktop, isWeb, logger } from "./core";
 export const RUN_ENV: RunEnv = RunEnvs.DESKTOP;
 
 // Re-export types and constants from ../types
-export type { EventCallback, UnlistenFn, RunEnv, Logger } from "../types";
 export { RunEnvs } from "../types";
 export type {
   AddonFile,
@@ -22,44 +21,48 @@ export type {
   AddonUpdateCheckResult,
   AddonUpdateInfo,
   AddonValidationResult,
-  ExtractedAddon,
-  FunctionPermission,
-  InstalledAddon,
-  Permission,
-  MarketDataProviderSetting,
-  ProviderCapabilities,
-  ImportRunsRequest,
-  UpdateThreadRequest,
-  UpdateToolResultRequest,
   AppInfo,
-  UpdateCheckResult,
-  UpdateCheckPayload,
-  PlatformCapabilities,
-  PlatformInfo,
-  BackendSyncStateResult,
   BackendEnableSyncResult,
-  BackendSyncEngineStatusResult,
+  BackendSyncBackgroundEngineResult,
   BackendSyncBootstrapOverwriteCheckResult,
-  BackendSyncReconcileReadyResult,
   BackendSyncBootstrapResult,
   BackendSyncCycleResult,
-  BackendSyncBackgroundEngineResult,
+  BackendSyncEngineStatusResult,
+  BackendSyncReconcileReadyResult,
   BackendSyncSnapshotUploadResult,
+  BackendSyncStateResult,
   EphemeralKeyPair,
+  EventCallback,
+  ExtractedAddon,
+  FunctionPermission,
+  ImportRunsRequest,
+  InstalledAddon,
+  Logger,
+  MarketDataProviderSetting,
+  Permission,
+  PlatformCapabilities,
+  PlatformInfo,
+  ProviderCapabilities,
+  RunEnv,
+  UnlistenFn,
+  UpdateCheckPayload,
+  UpdateCheckResult,
+  UpdateThreadRequest,
+  UpdateToolResultRequest,
 } from "../types";
 
 // Re-export AI types from features/ai-assistant
 export type {
+  AiChatMessage,
   AiChatModelConfig,
   AiSendMessageRequest,
   AiStreamEvent,
+  AiThread,
   AiToolCall,
   AiToolResult,
-  AiChatMessage,
   AiUsageStats,
-  AiThread,
-  ThreadPage,
   ListThreadsRequest,
+  ThreadPage,
 } from "@/features/ai-assistant/types";
 
 // ============================================================================
@@ -118,42 +121,42 @@ export * from "../shared/health";
 
 // Settings Commands (contains platform-specific backupDatabase, etc.)
 export {
-  getSettings,
-  updateSettings,
-  isAutoUpdateCheckEnabled,
   backupDatabase,
   backupDatabaseToPath,
-  restoreDatabase,
-  getAppInfo,
   checkForUpdates,
-  installUpdate,
+  getAppInfo,
   getPlatform,
+  getSettings,
+  installUpdate,
+  isAutoUpdateCheckEnabled,
+  restoreDatabase,
+  updateSettings,
 } from "./settings";
 
 // Addon Commands (platform-specific)
 export {
-  extractAddonZip,
-  installAddonZip,
-  installAddonFile,
-  listInstalledAddons,
-  toggleAddon,
-  uninstallAddon,
-  loadAddonForRuntime,
-  getEnabledAddonsOnStartup,
-  getInstalledAddons,
-  loadAddon,
-  extractAddon,
-  installAddon,
-  getEnabledAddons,
   checkAddonUpdate,
   checkAllAddonUpdates,
-  updateAddon,
-  downloadAddonForReview,
-  installFromStaging,
   clearAddonStaging,
-  getAddonRatings,
-  submitAddonRating,
+  downloadAddonForReview,
+  extractAddon,
+  extractAddonZip,
   fetchAddonStoreListings,
+  getAddonRatings,
+  getEnabledAddons,
+  getEnabledAddonsOnStartup,
+  getInstalledAddons,
+  installAddon,
+  installAddonFile,
+  installAddonZip,
+  installFromStaging,
+  listInstalledAddons,
+  loadAddon,
+  loadAddonForRuntime,
+  submitAddonRating,
+  toggleAddon,
+  uninstallAddon,
+  updateAddon,
 } from "./addons";
 
 // AI Streaming (Tauri Channel-based implementation)
@@ -161,45 +164,45 @@ export { streamAiChat } from "./ai-streaming";
 
 // Event Listeners (Tauri listen() implementation)
 export {
-  listenFileDropHover,
-  listenFileDrop,
-  listenFileDropCancelled,
-  listenPortfolioUpdateStart,
-  listenPortfolioUpdateComplete,
-  listenDatabaseRestored,
-  listenPortfolioUpdateError,
-  listenMarketSyncComplete,
-  listenMarketSyncStart,
-  listenMarketSyncError,
-  listenBrokerSyncStart,
   listenBrokerSyncComplete,
   listenBrokerSyncError,
-  listenNavigateToRoute,
+  listenBrokerSyncStart,
+  listenDatabaseRestored,
   listenDeepLink,
+  listenFileDrop,
+  listenFileDropCancelled,
+  listenFileDropHover,
+  listenMarketSyncComplete,
+  listenMarketSyncError,
+  listenMarketSyncStart,
+  listenNavigateToRoute,
+  listenPortfolioUpdateComplete,
+  listenPortfolioUpdateError,
+  listenPortfolioUpdateStart,
 } from "./events";
 
 // File Dialogs (Tauri file dialogs)
 export {
   openCsvFileDialog,
-  openFolderDialog,
   openDatabaseFileDialog,
   openFileSaveDialog,
+  openFolderDialog,
   openUrlInBrowser,
 } from "./files";
 
 // Crypto Commands (sync crypto operations)
 export {
-  syncGenerateRootKey,
-  syncDeriveDek,
-  syncGenerateKeypair,
+  syncComputeSas,
   syncComputeSharedSecret,
+  syncDecrypt,
+  syncDeriveDek,
   syncDeriveSessionKey,
   syncEncrypt,
-  syncDecrypt,
-  syncGeneratePairingCode,
-  syncHashPairingCode,
-  syncComputeSas,
   syncGenerateDeviceId,
+  syncGenerateKeypair,
+  syncGeneratePairingCode,
+  syncGenerateRootKey,
+  syncHashPairingCode,
   syncHmacSha256,
 } from "./crypto";
 

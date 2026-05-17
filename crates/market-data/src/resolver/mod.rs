@@ -95,7 +95,7 @@ pub use exchange_metadata::{
 pub use exchange_registry::{get_exchange_list, ExchangeInfo};
 pub use exchange_suffixes::{
     strip_yahoo_suffix, yahoo_exchange_suffixes, yahoo_exchange_to_mic, yahoo_suffix_to_mic,
-    ExchangeMap, ExchangeSuffix,
+    ExchangeFormatting, ExchangeMap,
 };
 pub use rules_resolver::RulesResolver;
 pub use traits::{ResolutionSource, ResolvedInstrument, Resolver, SymbolResolver};

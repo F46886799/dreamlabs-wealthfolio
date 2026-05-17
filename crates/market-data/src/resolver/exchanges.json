@@ -471,7 +471,9 @@
       "timezone": "Asia/Shanghai",
       "close": [15, 0],
       "yahoo": { "suffix": ".SS", "codes": ["SHH"] },
-      "alpha_vantage": { "suffix": ".SHH", "currency": "CNY" }
+      "alpha_vantage": { "suffix": ".SHH", "currency": "CNY" },
+      "tushare": { "suffix": ".SH", "currency": "CNY" },
+      "eastmoney": { "prefix": "1.", "currency": "CNY" }
     },
     {
       "mic": "XSHE",
@@ -481,7 +483,9 @@
       "timezone": "Asia/Shanghai",
       "close": [15, 0],
       "yahoo": { "suffix": ".SZ", "codes": ["SHZ"] },
-      "alpha_vantage": { "suffix": ".SHZ", "currency": "CNY" }
+      "alpha_vantage": { "suffix": ".SHZ", "currency": "CNY" },
+      "tushare": { "suffix": ".SZ", "currency": "CNY" },
+      "eastmoney": { "prefix": "0.", "currency": "CNY" }
     },
     {
       "mic": "XHKG",

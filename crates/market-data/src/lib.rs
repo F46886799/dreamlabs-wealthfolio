@@ -72,17 +72,19 @@ pub use models::{
 pub use resolver::{
     exchanges_for_currency, get_exchange_list, mic_to_currency, mic_to_exchange_name,
     strip_yahoo_suffix, yahoo_exchange_suffixes, yahoo_exchange_to_mic, yahoo_suffix_to_mic,
-    AssetResolver, ExchangeInfo, ExchangeMap, ExchangeSuffix, ResolutionSource, ResolvedInstrument,
+    AssetResolver, ExchangeFormatting, ExchangeInfo, ExchangeMap, ResolutionSource, ResolvedInstrument,
     Resolver, ResolverChain, RulesResolver, SymbolResolver,
 };
 
 // Re-export provider types
 pub use provider::alpha_vantage::AlphaVantageProvider;
 pub use provider::boerse_frankfurt::BoerseFrankfurtProvider;
+pub use provider::eastmoney::EastMoneyProvider;
 pub use provider::finnhub::FinnhubProvider;
 pub use provider::marketdata_app::MarketDataAppProvider;
 pub use provider::metal_price_api::MetalPriceApiProvider;
 pub use provider::openfigi::OpenFigiProvider;
+pub use provider::tushare::TushareProvider;
 pub use provider::us_treasury_calc::{TreasuryBondDetails, UsTreasuryCalcProvider};
 pub use provider::yahoo::{YahooDividend, YahooProvider};
 pub use provider::{MarketDataProvider, ProviderCapabilities, RateLimit};

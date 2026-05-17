@@ -149,6 +149,11 @@ export const COMMANDS: CommandMap = {
   import_quotes_csv: { method: "POST", path: "/market-data/quotes/import" },
   synch_quotes: { method: "POST", path: "/market-data/sync/history" },
   sync_market_data: { method: "POST", path: "/market-data/sync" },
+  // IPO
+  get_hk_ipos: { method: "GET", path: "/ipo/hk" },
+  get_cn_ipos: { method: "GET", path: "/ipo/cn" },
+  get_cb_ipos: { method: "GET", path: "/ipo/cb" },
+  get_reits_ipos: { method: "GET", path: "/ipo/reits" },
   // Secrets
   set_secret: { method: "POST", path: "/secrets" },
   get_secret: { method: "GET", path: "/secrets" },

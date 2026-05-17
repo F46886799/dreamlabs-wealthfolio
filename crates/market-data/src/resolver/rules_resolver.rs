@@ -70,9 +70,13 @@ impl RulesResolver {
 
         let symbol = match mic {
             Some(mic) => {
-                // Look up suffix for this MIC and provider, fallback to ticker only if not found
-                match self.exchange_map.get_suffix(mic, provider) {
-                    Some(suffix) => Arc::from(format!("{}{}", ticker, suffix)),
+                // Look up formatting for this MIC and provider, fallback to ticker only if not found
+                match self.exchange_map.get_formatting(mic, provider) {
+                    Some(fmt) => {
+                        let prefix = fmt.prefix.as_deref().unwrap_or("");
+                        let suffix = fmt.suffix.as_deref().unwrap_or("");
+                        Arc::from(format!("{}{}{}", prefix, ticker, suffix))
+                    }
                     None => {
                         // No mapping found - try ticker only (works for many US/global symbols)
                         ticker.clone()

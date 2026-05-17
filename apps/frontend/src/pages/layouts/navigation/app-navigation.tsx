@@ -47,6 +47,13 @@ const staticNavigation: NavigationProps = {
       label: "View Activities",
     },
     {
+      icon: <Icons.TrendingUp className="size-6" />,
+      title: "IPOs",
+      href: "/ipos",
+      keywords: ["ipo", "新股", "打新", "港股", "沪深", "北交所", "可转债", "美股"],
+      label: "IPOs 打新",
+    },
+    {
       icon: <Icons.Goals className="size-6" />,
       title: "Goals",
       href: "/goals",

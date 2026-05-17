@@ -11,11 +11,13 @@ use crate::models::{Mic, ProviderId};
 
 use super::exchange_registry::REGISTRY;
 
-/// Provider-specific exchange suffix and currency.
+/// Provider-specific exchange formatting and currency.
 #[derive(Clone, Debug)]
-pub struct ExchangeSuffix {
+pub struct ExchangeFormatting {
     /// The suffix to append to the ticker (e.g., ".TO" for Yahoo TSX).
-    pub suffix: Cow<'static, str>,
+    pub suffix: Option<Cow<'static, str>>,
+    /// The prefix to prepend to the ticker (e.g., "1." for EastMoney XSHG).
+    pub prefix: Option<Cow<'static, str>>,
     /// The trading currency for this exchange (e.g., "CAD" for TSX).
     pub currency: Cow<'static, str>,
 }
@@ -25,7 +27,7 @@ pub struct ExchangeSuffix {
 /// Maps ISO 10383 Market Identifier Codes to provider-specific suffixes
 /// for each supported provider.
 pub struct ExchangeMap {
-    mappings: HashMap<Mic, HashMap<ProviderId, ExchangeSuffix>>,
+    mappings: HashMap<Mic, HashMap<ProviderId, ExchangeFormatting>>,
 }
 
 impl Default for ExchangeMap {
@@ -47,7 +49,7 @@ impl ExchangeMap {
     /// Load all default exchange mappings from the JSON registry.
     fn load_defaults(&mut self) {
         for entry in &REGISTRY.catalog.exchanges {
-            let mut provider_map: HashMap<ProviderId, ExchangeSuffix> = HashMap::new();
+            let mut provider_map: HashMap<ProviderId, ExchangeFormatting> = HashMap::new();
 
             if let Some(ref yahoo) = entry.yahoo {
                 let currency = yahoo
@@ -57,8 +59,9 @@ impl ExchangeMap {
                     .unwrap_or("USD");
                 provider_map.insert(
                     Cow::Owned("YAHOO".to_string()),
-                    ExchangeSuffix {
-                        suffix: Cow::Owned(yahoo.suffix.clone()),
+                    ExchangeFormatting {
+                        suffix: Some(Cow::Owned(yahoo.suffix.clone())),
+                        prefix: None,
                         currency: Cow::Owned(currency.to_string()),
                     },
                 );
@@ -72,8 +75,41 @@ impl ExchangeMap {
                     .unwrap_or("USD");
                 provider_map.insert(
                     Cow::Owned("ALPHA_VANTAGE".to_string()),
-                    ExchangeSuffix {
-                        suffix: Cow::Owned(av.suffix.clone()),
+                    ExchangeFormatting {
+                        suffix: av.suffix.clone().map(Cow::Owned),
+                        prefix: av.prefix.clone().map(Cow::Owned),
+                        currency: Cow::Owned(currency.to_string()),
+                    },
+                );
+            }
+
+            if let Some(ref tus) = entry.tushare {
+                let currency = tus
+                    .currency
+                    .as_deref()
+                    .or(entry.currency.as_deref())
+                    .unwrap_or("USD");
+                provider_map.insert(
+                    Cow::Owned("TUSHARE".to_string()),
+                    ExchangeFormatting {
+                        suffix: tus.suffix.clone().map(Cow::Owned),
+                        prefix: tus.prefix.clone().map(Cow::Owned),
+                        currency: Cow::Owned(currency.to_string()),
+                    },
+                );
+            }
+
+            if let Some(ref em) = entry.eastmoney {
+                let currency = em
+                    .currency
+                    .as_deref()
+                    .or(entry.currency.as_deref())
+                    .unwrap_or("USD");
+                provider_map.insert(
+                    Cow::Owned("EASTMONEY".to_string()),
+                    ExchangeFormatting {
+                        suffix: em.suffix.clone().map(Cow::Owned),
+                        prefix: em.prefix.clone().map(Cow::Owned),
                         currency: Cow::Owned(currency.to_string()),
                     },
                 );
@@ -86,12 +122,14 @@ impl ExchangeMap {
         }
     }
 
+    /// Get the formatting for a MIC and provider.
+    pub fn get_formatting(&self, mic: &Mic, provider: &ProviderId) -> Option<&ExchangeFormatting> {
+        self.mappings.get(mic)?.get(provider)
+    }
+
     /// Get the suffix for a MIC and provider.
     pub fn get_suffix(&self, mic: &Mic, provider: &ProviderId) -> Option<&str> {
-        self.mappings
-            .get(mic)?
-            .get(provider)
-            .map(|s| s.suffix.as_ref())
+        self.get_formatting(mic, provider)?.suffix.as_deref()
     }
 
     /// Get the currency for a MIC and provider.

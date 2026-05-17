@@ -33,6 +33,10 @@ pub struct ExchangeEntry {
     pub yahoo: Option<YahooInfo>,
     #[serde(default)]
     pub alpha_vantage: Option<ProviderInfo>,
+    #[serde(default)]
+    pub tushare: Option<ProviderInfo>,
+    #[serde(default)]
+    pub eastmoney: Option<ProviderInfo>,
 }
 
 #[derive(Debug, Clone, Deserialize, serde::Serialize)]
@@ -46,7 +50,10 @@ pub struct YahooInfo {
 
 #[derive(Debug, Clone, Deserialize, serde::Serialize)]
 pub struct ProviderInfo {
-    pub suffix: String,
+    #[serde(default)]
+    pub suffix: Option<String>,
+    #[serde(default)]
+    pub prefix: Option<String>,
     #[serde(default)]
     pub currency: Option<String>,
 }

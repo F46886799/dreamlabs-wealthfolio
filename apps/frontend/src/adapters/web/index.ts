@@ -5,7 +5,7 @@ import type { RunEnv } from "../types";
 import { RunEnvs } from "../types";
 
 // Platform constants
-export { isDesktop, isWeb, logger } from "./core";
+export { invoke, isDesktop, isWeb, logger } from "./core";
 
 // Re-export types and constants from shared types
 export { RunEnvs } from "../types";
@@ -77,21 +77,21 @@ export {
   checkActivitiesImport,
   checkExistingDuplicates,
   createActivity,
-  deleteImportTemplate,
   deleteActivity,
-  getImportTemplate,
+  deleteImportTemplate,
   getAccountImportMapping,
+  getActivities,
+  getImportTemplate,
+  importActivities,
   linkAccountTemplate,
   linkTransferActivities,
-  unlinkTransferActivities,
-  getActivities,
-  importActivities,
   listImportTemplates,
   previewImportAssets,
   saveAccountImportMapping,
-  saveImportTemplate,
   saveActivities,
+  saveImportTemplate,
   searchActivities,
+  unlinkTransferActivities,
   updateActivity,
 } from "../shared/activities";
 export { parseCsv } from "./activities";
@@ -188,11 +188,11 @@ export {
 
 // Custom Provider Commands
 export {
-  getCustomProviders,
   createCustomProvider,
-  updateCustomProvider,
   deleteCustomProvider,
+  getCustomProviders,
   testCustomProviderSource,
+  updateCustomProvider,
 } from "../shared/custom-provider";
 
 // Contribution Limits Commands
@@ -240,7 +240,6 @@ export {
   confirmPairing,
   confirmPairingWithBootstrap,
   createPairing,
-  getPairingFlowState,
   deleteDevice,
   deviceSyncBootstrapOverwriteCheck,
   deviceSyncCancelSnapshotUpload,
@@ -253,9 +252,10 @@ export {
   getDevice,
   getDeviceSyncState,
   getImportRuns,
-  getPairingSourceStatus,
   getPairing,
+  getPairingFlowState,
   getPairingMessages,
+  getPairingSourceStatus,
   getPlatforms,
   getSubscriptionPlans,
   getSubscriptionPlansPublic,
