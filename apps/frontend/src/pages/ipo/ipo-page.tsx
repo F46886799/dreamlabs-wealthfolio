@@ -247,6 +247,94 @@ const formatDateWithWeekday = (value: string) => {
   return cleaned;
 };
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const normalizeToDayStart = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const parseIpoDate = (value: string, year: number) => {
+  if (!value || value === "-") {
+    return null;
+  }
+
+  const cleaned = value
+    .replace(/<[^>]*>/g, "")
+    .replace(/\(周[一二三四五六日天]\)/g, "")
+    .trim();
+
+  const fullDateMatch = cleaned.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (fullDateMatch) {
+    const parsed = new Date(
+      Number(fullDateMatch[1]),
+      Number(fullDateMatch[2]) - 1,
+      Number(fullDateMatch[3]),
+    );
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  const monthDayMatch = cleaned.match(/^(\d{1,2})-(\d{1,2})$/);
+  if (monthDayMatch) {
+    const month = Number(monthDayMatch[1]);
+    const day = Number(monthDayMatch[2]);
+    const candidates = [year - 1, year, year + 1]
+      .map((candidateYear) => new Date(candidateYear, month - 1, day))
+      .filter((candidate) => !Number.isNaN(candidate.getTime()));
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    const now = normalizeToDayStart(new Date());
+    return candidates.reduce((closest, current) => {
+      const currentDistance = Math.abs(normalizeToDayStart(current).getTime() - now.getTime());
+      const closestDistance = Math.abs(normalizeToDayStart(closest).getTime() - now.getTime());
+      return currentDistance < closestDistance ? current : closest;
+    });
+  }
+
+  return null;
+};
+
+const getDateProximityTextClass = (value: string) => {
+  const now = normalizeToDayStart(new Date());
+  const parsed = parseIpoDate(value, now.getFullYear());
+  if (!parsed) {
+    return "";
+  }
+
+  const target = normalizeToDayStart(parsed);
+  const dayOffset = Math.round((target.getTime() - now.getTime()) / MS_PER_DAY);
+
+  if (dayOffset < 0) {
+    return "";
+  }
+
+  if (dayOffset === 0) {
+    return "text-destructive font-semibold";
+  }
+  if (dayOffset <= 1) {
+    return "text-destructive";
+  }
+  if (dayOffset <= 3) {
+    return "text-destructive/85";
+  }
+  if (dayOffset <= 7) {
+    return "text-destructive/70";
+  }
+  if (dayOffset <= 14) {
+    return "text-destructive/55";
+  }
+  if (dayOffset <= 30) {
+    return "text-destructive/40";
+  }
+
+  if (dayOffset <= 90) {
+    return "text-destructive/25";
+  }
+
+  return "";
+};
+
 const IpoTable = ({ market }: { market: IpoMarket }) => {
   const { data: hkIpos = [], isLoading: hkLoading } = useQuery<HkIpoRecord[]>({
     queryKey: ["hk_ipos"],
@@ -590,29 +678,54 @@ const IpoTable = ({ market }: { market: IpoMarket }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {hkPagedIpos.map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell className="font-medium">{record.code}</TableCell>
-                  <TableCell>{record.name}</TableCell>
-                  <TableCell>{record.board}</TableCell>
-                  <TableCell>{record.subscriptionStart}</TableCell>
-                  <TableCell>{record.subscriptionEnd}</TableCell>
-                  <TableCell>{getPreviousNthTradingDay(record.listingDate, 2)}</TableCell>
-                  <TableCell>{getPreviousNthTradingDay(record.listingDate, 1)}</TableCell>
-                  <TableCell>{record.listingDate}</TableCell>
-                  <TableCell>{record.issuePrice}</TableCell>
-                  <TableCell>{record.issueSize}</TableCell>
-                  <TableCell>{record.lotSize}</TableCell>
-                  <TableCell>{record.winRate}</TableCell>
-                  <TableCell>{record.firstDayChange}</TableCell>
-                  <TableCell>{record.underwriter}</TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANTS[record.status]}>
-                      {STATUS_LABELS[record.status]}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {hkPagedIpos.map((record) => {
+                const announcementDate = getPreviousNthTradingDay(record.listingDate, 2);
+                const grayMarketDate = getPreviousNthTradingDay(record.listingDate, 1);
+
+                return (
+                  <TableRow key={record.id}>
+                    <TableCell className="font-medium">{record.code}</TableCell>
+                    <TableCell>{record.name}</TableCell>
+                    <TableCell>{record.board}</TableCell>
+                    <TableCell>
+                      <span className={getDateProximityTextClass(record.subscriptionStart)}>
+                        {record.subscriptionStart}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={getDateProximityTextClass(record.subscriptionEnd)}>
+                        {record.subscriptionEnd}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={getDateProximityTextClass(announcementDate)}>
+                        {announcementDate}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={getDateProximityTextClass(grayMarketDate)}>
+                        {grayMarketDate}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={getDateProximityTextClass(record.listingDate)}>
+                        {record.listingDate}
+                      </span>
+                    </TableCell>
+                    <TableCell>{record.issuePrice}</TableCell>
+                    <TableCell>{record.issueSize}</TableCell>
+                    <TableCell>{record.lotSize}</TableCell>
+                    <TableCell>{record.winRate}</TableCell>
+                    <TableCell>{record.firstDayChange}</TableCell>
+                    <TableCell>{record.underwriter}</TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_VARIANTS[record.status]}>
+                        {STATUS_LABELS[record.status]}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
